@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroShop - Toko Elektronik Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .cart-badge {
+            animation: bounce 0.3s ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            transition: all 0.3s ease;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold text-blue-600">MABASH SHOP</h1>
+                </div>
+                
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors">Beranda</a>
+                    <a href="#products" class="text-gray-700 hover:text-blue-600 transition-colors">Produk</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors">Kategori</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors">Kontak</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Cari produk..." 
+                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                    </div>
+                    
+                    <button id="cartBtn" class="relative bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        🛒 Keranjang
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-6xl font-bold mb-6">Elektronik Terbaik untuk Anda</h2>
+            <p class="text-xl mb-8">Temukan gadget dan elektronik terbaru dengan harga terbaik</p>
+            <button class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                Mulai Belanja Sekarang
+            </button>
+        </div>
+    </section>
+
+    <section class="container mx-auto px-4 py-8">
+        <div class="flex flex-wrap gap-4 justify-center">
+            <button class="filter-btn active bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors" data-category="all">
+                Semua Produk
+            </button>
+            <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition-colors" data-category="smartphone">
+                📱 Smartphone
+            </button>
+            <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition-colors" data-category="laptop">
+                💻 Laptop
+            </button>
+            <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition-colors" data-category="headphone">
+                🎧 Headphone
+            </button>
+            <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-full hover:bg-gray-300 transition-colors" data-category="camera">
+                📷 Kamera
+            </button>
+        </div>
+    </section>
+
+    <section id="products" class="container mx-auto px-4 py-8">
+        <h3 class="text-3xl font-bold text-center mb-12 text-gray-800">Produk Unggulan</h3>
+        
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            </div>
+    </section>
+
+    <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-2xl w-full max-h-96 overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">Keranjang Belanja</h3>
+                        <button id="closeCart" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                    </div>
+                    
+                    <div id="cartItems" class="space-y-4">
+                        </div>
+                    
+                    <div class="border-t pt-4 mt-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xl font-bold">Total: </span>
+                            <span id="cartTotal" class="text-xl font-bold text-blue-600">Rp 0</span>
+                        </div>
+                        <button id="checkoutBtn" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                            Checkout Sekarang
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-4xl w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                        <button id="closeModal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <img id="modalImage" class="w-full h-80 object-contain mx-auto" src="" alt="Product Image">
+                        </div>
+                        <div>
+                            <p id="modalDescription" class="text-gray-600 mb-4"></p>
+                            <div class="mb-4">
+                                <span class="text-3xl font-bold text-blue-600" id="modalPrice"></span>
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium mb-2">Jumlah:</label>
+                                <div class="flex items-center space-x-3">
+                                    <button id="decreaseQty" class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">-</button>
+                                    <span id="quantity" class="px-4 py-1 border rounded">1</span>
+                                    <button id="increaseQty" class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">+</button>
+                                </div>
+                            </div>
+                            <button id="addToCartModal" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                                Tambah ke Keranjang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-xl font-bold mb-4">ElectroShop</h4>
+                    <p class="text-gray-300">Toko elektronik terpercaya dengan produk berkualitas dan harga terbaik.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Kategori</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Smartphone</a></li>
+                        <li><a href="#" class="hover:text-white">Laptop</a></li>
+                        <li><a href="#" class="hover:text-white">Headphone</a></li>
+                        <li><a href="#" class="hover:text-white">Kamera</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Layanan</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white">Bantuan</a></li>
+                        <li><a href="#" class="hover:text-white">Pengiriman</a></li>
+                        <li><a href="#" class="hover:text-white">Pengembalian</a></li>
+                        <li><a href="#" class="hover:text-white">Garansi</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Kontak</h4>
+                    <div class="space-y-2 text-gray-300">
+                        <p>📧 info@electroshop.com</p>
+                        <p>📞 +62 812-3456-7890</p>
+                        <p>📍 Jakarta, Indonesia</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 ElectroShop. Semua hak dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample product data
+        const products = [
+            {
+                id: 1,
+                name: "iPhone 14 Pro",
+                price: 50000000,
+                category: "smartphone",
+                image: "https://media.hitekno.com/thumbs/2022/10/21/31621-iphone-14-pro-dan-iphone-14-pro-max-deep-purple/730x480-img-31621-iphone-14-pro-dan-iphone-14-pro-max-deep-purple.jpg",
+                description: "iPhone terbaru dengan chip A17 Pro dan kamera canggih untuk fotografi profesional."
+            },
+            {
+                id: 2,
+                name: "MacBook Air M2",
+                price: 16999000,
+                category: "laptop",
+                image: "https://cdn1-production-images-kly.akamaized.net/oJfo0Fb-Qhef_KbIH82TRk9cNGQ=/1200x675/smart/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/4044546/original/025926300_1654563518-MacBook_Air_M2_diumumkan_dalam_acara_WWDC_2022.jpg",
+                description: "Laptop ultra-tipis dengan performa luar biasa dan daya tahan baterai hingga 18 jam."
+            },
+            {
+                id: 3,
+                name: "Asus ROG phone 5",
+                price: 4999000,
+                category: "headphone",
+                image: "https://dorangadget.com/wp-content/uploads/2021/03/review-asus-rog-phone-5-hp-gaming-sultan-3.jpg",
+                description: "Headphone noise-cancelling terbaik dengan kualitas suara premium dan kenyamanan maksimal."
+            },
+            {
+                id: 4,
+                name: "Canon EOS m50",
+                price: 32999000,
+                category: "camera",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2018_04_EOS_M50_IMG_4611b.jpg/960px-2018_04_EOS_M50_IMG_4611b.jpg",
+                description: "Kamera mirrorless profesional dengan sensor full-frame dan stabilisasi gambar canggih."
+            },
+            {
+                id: 5,
+                name: "Samsung Galaxy S24 ultra",
+                price: 12999000,
+                category: "smartphone",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj0XeDEUMMHo_yOcnpTyx-1ph150-E8EomHg&s",
+                description: "Smartphone flagship dengan AI photography dan layar Dynamic AMOLED 2X yang memukau."
+            },
+            {
+                id: 6,
+                name: "Dell XPS 17",
+                price: 19999000,
+                category: "laptop",
+                image: "https://cdn.mos.cms.futurecdn.net/feHmbBxUXPexTeQk6BkGoe.jpg",
+                description: "Laptop premium dengan desain elegan dan performa tinggi untuk produktivitas maksimal."
+            },
+            {
+                id: 7,
+                name: "AirPods Pro 3",
+                price: 3499000,
+                category: "headphone",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnYFRaJozRQRpGZ_LL2IxdkFD5j2yaOJdBYw&s",
+                description: "Earbuds wireless dengan Active Noise Cancellation dan Spatial Audio yang imersif."
+            },
+            {
+                id: 8,
+                name: "Fujifilm X-T5",
+                price: 21999000,
+                category: "camera",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdV8n0dgELLqDNzqJMtXl1-lfu1J_ZTJAUtw&s",
+                description: "Kamera mirrorless dengan sensor 40MP dan kemampuan video 6K untuk kreator konten."
+            }
+        ];
+
+        let cart = [];
+        let filteredProducts = [...products];
+        let currentProduct = null;
+        let modalQuantity = 1;
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Render products
+        function renderProducts(productsToRender = filteredProducts) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            productsToRender.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer fade-in';
+                productCard.innerHTML = `
+                    <div class="w-full h-48">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain p-4">
+                    </div>
+                    <div class="p-6 text-center">
+                        <h4 class="text-lg font-semibold mb-2 text-gray-800">${product.name}</h4>
+                        <p class="text-2xl font-bold text-blue-600 mb-4">${formatCurrency(product.price)}</p>
+                        <div class="space-y-2">
+                            <button onclick="openProductModal(${product.id})" class="w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                                Lihat Detail
+                            </button>
+                            <button onclick="addToCart(${product.id})" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Tambah ke Keranjang
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(productCard);
+            });
+        }
+
+        // Filter products
+        function filterProducts(category) {
+            if (category === 'all') {
+                filteredProducts = [...products];
+            } else {
+                filteredProducts = products.filter(product => product.category === category);
+            }
+            renderProducts();
+        }
+
+        // Search products
+        function searchProducts(query) {
+            const searchResults = products.filter(product => 
+                product.name.toLowerCase().includes(query.toLowerCase())
+            );
+            renderProducts(searchResults);
+        }
+
+        // Add to cart
+        function addToCart(productId, quantity = 1) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ ...product, quantity });
+            }
+
+            updateCartUI();
+            animateCartBadge();
+        }
+
+        // Remove from cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        // Update cart quantity
+        function updateCartQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                updateCartUI();
+            }
+        }
+
+        // Update cart UI
+        function updateCartUI() {
+            const cartCount = document.getElementById('cartCount');
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+
+            // Update cart count
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+
+            // Update cart items
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-gray-500 text-center py-8">Keranjang belanja kosong</p>';
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between p-4 border rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-contain rounded-md">
+                            <div>
+                                <h4 class="font-semibold">${item.name}</h4>
+                                <p class="text-blue-600 font-bold">${formatCurrency(item.price)}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})" 
+                                    class="bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">-</button>
+                            <span class="px-3">${item.quantity}</span>
+                            <button onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})" 
+                                    class="bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">+</button>
+                            <button onclick="removeFromCart(${item.id})" 
+                                    class="text-red-500 hover:text-red-700 ml-4">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Update total
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotal.textContent = formatCurrency(total);
+        }
+
+        // Animate cart badge
+        function animateCartBadge() {
+            const badge = document.getElementById('cartCount');
+            badge.classList.add('cart-badge');
+            setTimeout(() => badge.classList.remove('cart-badge'), 300);
+        }
+
+        // Open product modal
+        function openProductModal(productId) {
+            currentProduct = products.find(p => p.id === productId);
+            modalQuantity = 1;
+
+            document.getElementById('modalTitle').textContent = currentProduct.name;
+            // Mengubah ini untuk menggunakan properti `src` pada elemen `<img>`
+            document.getElementById('modalImage').src = currentProduct.image; 
+            document.getElementById('modalDescription').textContent = currentProduct.description;
+            document.getElementById('modalPrice').textContent = formatCurrency(currentProduct.price);
+            document.getElementById('quantity').textContent = modalQuantity;
+
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        // Close modals
+        function closeModal() {
+            document.getElementById('productModal').classList.add('hidden');
+            document.getElementById('cartModal').classList.add('hidden');
+        }
+
+        // Checkout
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Keranjang belanja kosong!');
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            alert(`Terima kasih! Pesanan Anda sebesar ${formatCurrency(total)} sedang diproses.\n\nIni adalah demo - tidak ada pembayaran yang sesungguhnya dilakukan.`);
+            
+            cart = [];
+            updateCartUI();
+            closeModal();
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProducts();
+
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('active', 'bg-blue-600', 'text-white');
+                        b.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    
+                    this.classList.add('active', 'bg-blue-600', 'text-white');
+                    this.classList.remove('bg-gray-200', 'text-gray-700');
+                    
+                    filterProducts(this.dataset.category);
+                });
+            });
+
+            // Search
+            document.getElementById('searchInput').addEventListener('input', function() {
+                searchProducts(this.value);
+            });
+
+            // Cart modal
+            document.getElementById('cartBtn').addEventListener('click', function() {
+                document.getElementById('cartModal').classList.remove('hidden');
+            });
+
+            document.getElementById('closeCart').addEventListener('click', closeModal);
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+
+            // Modal quantity controls
+            document.getElementById('decreaseQty').addEventListener('click', function() {
+                if (modalQuantity > 1) {
+                    modalQuantity--;
+                    document.getElementById('quantity').textContent = modalQuantity;
+                }
+            });
+
+            document.getElementById('increaseQty').addEventListener('click', function() {
+                modalQuantity++;
+                document.getElementById('quantity').textContent = modalQuantity;
+            });
+
+            // Add to cart from modal
+            document.getElementById('addToCartModal').addEventListener('click', function() {
+                addToCart(currentProduct.id, modalQuantity);
+                closeModal();
+            });
+
+            // Checkout
+            document.getElementById('checkoutBtn').addEventListener('click', checkout);
+
+            // Close modals when clicking outside
+            document.getElementById('cartModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+
+            document.getElementById('productModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        });
+    </script>
+</body>
+</html>
